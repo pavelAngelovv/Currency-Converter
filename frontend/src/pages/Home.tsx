@@ -86,7 +86,7 @@ const Home = () => {
             <TextField
               label={currency}
               type="number"
-              value={amounts[currency] ? Number(amounts[currency].toPrecision(6)).toString() : ''}
+              value={amounts[currency] || ''}
               onChange={(e) => handleAmountChange(e, currency)}
               fullWidth
             />
