@@ -10,6 +10,8 @@ import Button from '@mui/material/Button';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import ClearIcon from '@mui/icons-material/Clear';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import styles from '../styles/Home.module.css';
 
 
 interface Currency {
@@ -41,17 +43,15 @@ const Home = () => {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     currency: string) => {
     const value = parseFloat(e.target.value);
-    if (!isNaN(value)) {
-      axios
-        .post('http://localhost:3000/api/currencies/update', {
-          baseCurrency: currency,
-          amount: value,
-        })
-        .then((response) => {
-          setAmounts(response.data);
-        })
-        .catch((error) => console.error('Error converting currencies:', error));
-    }
+    axios
+      .post('http://localhost:3000/api/currencies/update', {
+        baseCurrency: currency,
+        amount: value,
+      })
+      .then((response) => {
+        setAmounts(response.data);
+      })
+      .catch((error) => console.error('Error converting currencies:', error));
   };
 
   const handleAddCurrency = (currency: string) => {
@@ -75,17 +75,23 @@ const Home = () => {
   };
 
   return (
-    <Container maxWidth='md'>
-      <Typography variant="h4" gutterBottom>
+    <Container
+      maxWidth='md'
+      className={styles.container}>
+      <Typography color='white' variant="h4" gutterBottom>
         Currency Converter
       </Typography>
 
-      <Box display="flex" flexDirection="column" gap={2}>
+      <Box
+        display="flex"
+        flexDirection="column"
+        gap={2}
+        className={styles.inputBox}>
         {currencyFields.map((currency) => (
           <Box key={currency} display="flex" alignItems="center" gap={2}>
             <TextField
               label={currency}
-              type="number"
+              type="tel"
               value={amounts[currency] || ''}
               onChange={(e) => handleAmountChange(e, currency)}
               fullWidth
@@ -97,16 +103,19 @@ const Home = () => {
             )}
           </Box>
         ))}
-      </Box>
-
-      <Box mt={2} display="flex" alignItems="center" gap={2}>
+              <Box mt={2} display="flex" alignItems="center" gap={2}>
         <Select
           value=""
+          variant='standard'
           onChange={(e) => handleAddCurrency(e.target.value)}
           displayEmpty
+          className={styles.addButton}
+          disableUnderline
+          IconComponent={() => null}
         >
           <MenuItem value="" disabled>
             Add Currency
+          <AddCircleIcon sx={{marginY: '-7px', ml: '5px'}} />
           </MenuItem>
           {availableCurrencies.map((currency) => (
             <MenuItem key={currency} value={currency}>
@@ -115,10 +124,13 @@ const Home = () => {
           ))}
         </Select>
       </Box>
+      </Box>
 
       <Box mt={2} display="flex" gap={2}>
-        <Button variant="outlined" color="secondary" component={Link} to="/currencies">
-          Go to Currencies Table
+        <Button variant="contained" color="secondary" component={Link} to="/currencies">
+        <Typography color='white'>
+          Currency Table
+          </Typography>
         </Button>
       </Box>
     </Container>

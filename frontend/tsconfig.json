@@ -11,7 +11,8 @@
     "allowJs": true,
     "skipLibCheck": true,
     "isolatedModules": true,
-    "noEmit": true
+    "noEmit": true,
+    "plugins": [{ "name": "typescript-plugin-css-modules" }]
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"]
