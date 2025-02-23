@@ -34,7 +34,7 @@ export const convertCurrencies = async (baseCurrency: string, amount: number) =>
   return Object.fromEntries(
     currencies.map((currency) => [
       currency.name,
-      Number(((currency.value / baseCurrencyData.value) * amount).toPrecision(4)),
+      Number(((currency.value / baseCurrencyData.value) * amount).toPrecision(5)),
     ])
   );
 };
