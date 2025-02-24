@@ -16,6 +16,8 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
 import styles from '../styles/Home.module.css';
 
+const API_URL = process.env.VITE_REACT_APP_API_URL || 'http://localhost:3000/api/currencies';
+
 interface Currency {
   name: string;
   value: number;
@@ -40,7 +42,7 @@ const Home = () => {
     setLoading(true);
     
     axios
-      .get<Currency[]>('http://localhost:3000/api/currencies')
+      .get<Currency[]>(API_URL)
       .then((response) => {
         setAvailableCurrencies(response.data.map((currency) => currency.name));
         
@@ -83,7 +85,7 @@ const Home = () => {
       return;
     } else {
       axios
-        .post('http://localhost:3000/api/currencies/update', {
+        .post(API_URL + '/update', {
           baseCurrency: currency,
           amount: value,
         })

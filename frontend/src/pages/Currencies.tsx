@@ -16,6 +16,8 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api/currencies';
+
 interface Currency {
   name: string;
   value: number;
@@ -31,7 +33,7 @@ const CurrencyTable = () => {
     const fetchSortedCurrencies = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(`http://localhost:3000/api/currencies/sorted?sortBy=${sortBy}&order=${order}`);
+        const response = await axios.get(API_URL + `/sorted?sortBy=${sortBy}&order=${order}`);
         setCurrencies(response.data);
       } catch (error) {
         console.error("Error fetching sorted currencies:", error);
