@@ -29,17 +29,33 @@ const Home = () => {
   const [error, setError] = useState<string>('');
 
   useEffect(() => {
+    const storedAmounts = localStorage.getItem('amounts');
+    const storedCurrencies = localStorage.getItem('currencyFields');
+    
+    if (storedAmounts && storedCurrencies) {
+      setAmounts(JSON.parse(storedAmounts));
+      setCurrencyFields(JSON.parse(storedCurrencies));
+    }
+    
     setLoading(true);
+    
     axios
       .get<Currency[]>('http://localhost:3000/api/currencies')
       .then((response) => {
         setAvailableCurrencies(response.data.map((currency) => currency.name));
-
-        const initialAmounts: { [key: string]: number } = {};
-        response.data.forEach((currency) => {
-          initialAmounts[currency.name] = currency.value;
-        });
-        setAmounts(initialAmounts);
+        
+        if (!storedAmounts || !storedCurrencies) {
+          const initialAmounts: { [key: string]: number } = {};
+          response.data.forEach((currency) => {
+            initialAmounts[currency.name] = currency.value;
+          });
+  
+          localStorage.setItem('amounts', JSON.stringify(initialAmounts));
+          localStorage.setItem('currencyFields', JSON.stringify(['USD', 'EUR', 'RUB', 'BYN']));
+          
+          setAmounts(initialAmounts);
+        }
+        
         setLoading(false);
       })
       .catch((error) => {
@@ -47,6 +63,13 @@ const Home = () => {
         setLoading(false);
       });
   }, []);
+  
+  useEffect(() => {
+    if (Object.keys(amounts).length > 0 && currencyFields.length > 0) {
+      localStorage.setItem('amounts', JSON.stringify(amounts));
+      localStorage.setItem('currencyFields', JSON.stringify(currencyFields));
+    }
+  }, [amounts, currencyFields]); 
 
   const handleAmountChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
