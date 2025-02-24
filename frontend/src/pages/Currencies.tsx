@@ -16,7 +16,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 
-const API_URL = process.env.VITE_REACT_APP_API_URL as string;
+const API_URL = process.env.VITE_REACT_APP_API_URL || 'https://currency-converter-wydr.onrender.com/api/currencies';
 
 interface Currency {
   name: string;
