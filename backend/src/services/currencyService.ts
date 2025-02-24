@@ -1,3 +1,4 @@
+import { Request, Response } from 'express';
 import CurrencyModel from '../models/currencyModel.ts';
 import axios from "axios";
 
@@ -34,7 +35,27 @@ export const convertCurrencies = async (baseCurrency: string, amount: number) =>
   return Object.fromEntries(
     currencies.map((currency) => [
       currency.name,
-      Number(((currency.value / baseCurrencyData.value) * amount).toPrecision(5)),
+      Number(((currency.value / baseCurrencyData.value) * amount).toFixed(4)),
     ])
   );
+};
+
+export const getSortedCurrencies = async (req: Request, res: Response) => {
+  try {
+    const { sortBy = "name", order = "asc" } = req.query;
+
+    const validSortFields = ["name", "value"];
+    if (!validSortFields.includes(sortBy as string)) {
+      res.status(400).json({ error: "Invalid sort field" });
+      return
+    }
+
+    const sortOrder = order === "desc" ? -1 : 1;
+
+    const currencies = await CurrencyModel.find().sort({ [sortBy as string]: sortOrder });
+
+    res.status(200).json(currencies);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch sorted currencies" });
+  }
 };
