@@ -16,7 +16,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 
-const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:3000/api/currencies';
+const API_URL = process.env.VITE_REACT_APP_API_URL as string;
 
 interface Currency {
   name: string;

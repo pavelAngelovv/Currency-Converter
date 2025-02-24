@@ -16,7 +16,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
 import styles from '../styles/Home.module.css';
 
-const API_URL = process.env.VITE_REACT_APP_API_URL || 'http://localhost:3000/api/currencies';
+const API_URL = process.env.VITE_REACT_APP_API_URL as string;
 
 interface Currency {
   name: string;
