@@ -12,8 +12,9 @@ import MenuItem from '@mui/material/MenuItem';
 import ClearIcon from '@mui/icons-material/Clear';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import CircularProgress from '@mui/material/CircularProgress';
+import Alert from '@mui/material/Alert';
 import styles from '../styles/Home.module.css';
-
 
 interface Currency {
   name: string;
@@ -24,8 +25,11 @@ const Home = () => {
   const [amounts, setAmounts] = useState<{ [key: string]: number }>({});
   const [currencyFields, setCurrencyFields] = useState<string[]>(['USD', 'EUR', 'RUB', 'BYN']);
   const [availableCurrencies, setAvailableCurrencies] = useState<string[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>('');
 
   useEffect(() => {
+    setLoading(true);
     axios
       .get<Currency[]>('http://localhost:3000/api/currencies')
       .then((response) => {
@@ -36,8 +40,12 @@ const Home = () => {
           initialAmounts[currency.name] = currency.value;
         });
         setAmounts(initialAmounts);
+        setLoading(false);
       })
-      .catch((error) => console.error('Error fetching currencies:', error));
+      .catch((error) => {
+        setError('Error fetching currencies');
+        setLoading(false);
+      });
   }, []);
 
   const handleAmountChange = (
@@ -70,9 +78,9 @@ const Home = () => {
         ...prev,
         [currency]: amounts[currency],
       }));
+      setError('');
     } else {
-      console.log('Currency is already in the list!');
-      // TODO Render error message
+      setError('Currency is already in the list!');
     }
   };
 
@@ -84,62 +92,63 @@ const Home = () => {
   };
 
   return (
-    <Container
-      maxWidth='md'
-      className={styles.container}>
-      <Typography color='white' variant="h4" gutterBottom>
-        Currency Converter
+    <Container sx={{marginY: 10,}} maxWidth='md' className={styles.container}>
+      {error && <Alert sx={{marginY: -8, position: 'absolute'}} severity="error">{error}</Alert>}
+      <Typography color='white' fontFamily='Fantasy' variant="h4" gutterBottom>
+        ₵urrency ₵onverter
       </Typography>
 
-      <Box
-        display="flex"
-        flexDirection="column"
-        gap={2}
-        className={styles.inputBox}>
-        {currencyFields.map((currency) => (
-          <Box key={currency} display="flex" alignItems="center" gap={2}>
-            <TextField
-              label={currency}
-              type="tel"
-              value={amounts[currency] || ''}
-              onChange={(e) => handleAmountChange(e, currency)}
-              fullWidth
-            />
-            {!['USD', 'EUR', 'RUB', 'BYN'].includes(currency) && (
-              <IconButton onClick={() => handleRemoveCurrency(currency)} color="error">
-                <ClearIcon />
-              </IconButton>
-            )}
-          </Box>
-        ))}
-        <Box mt={2} display="flex" alignItems="center" gap={2}>
-          <Select
-            value=""
-            variant='standard'
-            onChange={(e) => handleAddCurrency(e.target.value)}
-            displayEmpty
-            className={styles.addButton}
-            disableUnderline
-            IconComponent={() => null}
-          >
-            <MenuItem value="" disabled>
-              Add Currency
-              <AddCircleIcon sx={{ marginY: '-7px', ml: '5px' }} />
-            </MenuItem>
-            {availableCurrencies.map((currency) => (
-              <MenuItem key={currency} value={currency}>
-                {currency}
-              </MenuItem>
+      <Box display="flex" flexDirection="column" gap={2} className={styles.inputBox}>
+        {loading ? (
+          <CircularProgress style={{ margin: "20px auto", display: "block" }} />
+        ) : (
+          <>
+            {currencyFields.map((currency) => (
+              <Box key={currency} display="flex" alignItems="center">
+                <TextField
+                  label={currency}
+                  type="tel"
+                  value={amounts[currency] || ''}
+                  onChange={(e) => handleAmountChange(e, currency)}
+                  fullWidth
+                />
+                {!['USD', 'EUR', 'RUB', 'BYN'].includes(currency) && (
+                  <IconButton onClick={() => handleRemoveCurrency(currency)} color="error">
+                    <ClearIcon />
+                  </IconButton>
+                )}
+              </Box>
             ))}
-          </Select>
-        </Box>
+            <Box mt={2} display="flex" alignItems="center">
+              <Select
+                value=""
+                variant='standard'
+                onChange={(e) => handleAddCurrency(e.target.value)}
+                displayEmpty
+                className={styles.addButton}
+                disableUnderline
+                IconComponent={() => null}
+              >
+                <MenuItem value="" disabled>
+                  Add Currency
+                  <AddCircleIcon sx={{ marginY: '-7px', ml: '5px' }} />
+                </MenuItem>
+                {availableCurrencies.map((currency) => (
+                  <MenuItem key={currency} value={currency}>
+                    {currency}
+                  </MenuItem>
+                ))}
+              </Select>
+            </Box>
+          </>
+        )}
       </Box>
 
       <Box mt={2} display="flex" gap={2}>
         <Button variant="contained" color="secondary" component={Link} to="/currencies">
           <Typography color='white'>
             Currency Table
-            <ArrowForwardIosIcon sx={{ marginY: '-7px', ml: '5px' }}/>
+            <ArrowForwardIosIcon sx={{ marginY: '-7px', ml: '5px' }} />
           </Typography>
         </Button>
       </Box>
